@@ -1,3 +1,5 @@
+# from bookshelf.models import Book
+
 ```markdown
 ### Delete Operation
 
