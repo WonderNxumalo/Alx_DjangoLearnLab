@@ -15,6 +15,7 @@ def list_all_books(request):
 # --- 2. Class-based View ---
 class LibraryDefaultView(DetailView):
     model = Library
+    #relationship_app/library_detail.html ( from .models import Library )
     template_name = 'library_detail.html'
     context_object_name = 'library'
     
