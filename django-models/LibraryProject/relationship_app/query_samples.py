@@ -63,3 +63,5 @@ mams_librarian = library_tshwane.librarian
 print(f" - Librarian: {mams_librarian.name}")
 
 print("\n--- End of Script ---")
+
+# Library.objects.get(name=library_name)
