@@ -9,6 +9,7 @@ def list_all_books(request):
     
     context = {'books': all_books}
     # Render list_books.html template
+    # relationship_app/list_books.html
     return render(request, 'list_books.html', context)
 
 # --- 2. Class-based View ---
