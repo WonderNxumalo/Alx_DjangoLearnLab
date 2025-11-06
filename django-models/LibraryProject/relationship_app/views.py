@@ -2,6 +2,7 @@ from django.shortcuts import render
 # from django.views.generic.detail import DetailView
 # from django.contrib.auth import login
 # UserCreationForm()
+#from django.contrib.auth.decorators import permission_required
 from django.views.generic import DetailView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
