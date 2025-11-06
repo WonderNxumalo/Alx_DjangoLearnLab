@@ -25,6 +25,14 @@ class Book(models.Model):
 # Library Model (Many-to-many relationship via ManyToManyField)
 # A library can hold many books and books can be in many libraries
 
+    # Custom Permission
+    class Meta:
+        permissions = [
+            ("can_add_book", "Can add a new book to the catalog"),
+            ("can_change_book", "Can edit existing book details"),
+            ("can_delete_book", "Can delete a book from the catalog"),
+        ]
+
 class Library(models.Model):
     name = models.CharField(max_length=100)
     books = models.ManyToManyField(Book)

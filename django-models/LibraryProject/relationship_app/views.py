@@ -7,7 +7,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.http import HttpResponse
 from .models import Book, Library, UserProfile
 
 # Custom Access Test Functions
@@ -69,3 +70,17 @@ def librarian_view(request):
 @user_passes_test(is_member, login_url='/login/')
 def member_view(request):
     return render(request, 'relationship_app/member_view.html', {'role': 'Member'})
+
+# Secure Book Management Views
+
+@permission_required('relationship_app.can_add_book', login_url='/login/')
+def book_add(request):
+    return HttpResponse("<h1>Add Book Page</h1><p>User has permission to add books.</p><p><a href='/books/'>Back to list</a></p>")
+
+@permission_required('relationship_app.can_change_book', login_url='/login/')
+def book_edit(request, pk):
+    return HttpResponse(f"<h1>Edit Book {pk} Page</h1><p>User has permission to change books.</p><p><a href='/books/'>Back to list</a></p>")
+
+@permission_required('relationship_app.can_delete_book', login_url='/login/')
+def book_delete(request, pk):
+    return HttpResponse(f"<h1>Delete Book {pk} Page</h1><p>User has permission to delete books.</p><p><a href='/books/'>Back to list</a></p>")
