@@ -43,7 +43,7 @@ class Librarian(models.Model):
     
 # UserProfile model
 class UserProfile(models.Model):
-    ROLE_ADMIN = 'Admin'
+    ROLE_ADMIN = 'Admi'
     ROLE_LIBRARIAN = 'Librarian'
     ROLE_MEMBER = 'Member'
     

@@ -64,7 +64,7 @@ def admin_view(request):
 
 @user_passes_test(is_librarian, login_url='/login/')
 def librarian_view(request):
-    return render(request, 'relationship_app/libraria_view.html', {'role': 'Librarian'})
+    return render(request, 'relationship_app/librarian_view.html', {'role': 'Librarian'})
 
 @user_passes_test(is_member, login_url='/login/')
 def member_view(request):
