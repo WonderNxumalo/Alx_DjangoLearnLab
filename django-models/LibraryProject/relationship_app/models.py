@@ -43,11 +43,14 @@ class Librarian(models.Model):
     
 # UserProfile model
 class UserProfile(models.Model):
-    ROLE_ADMIN = 'Admi'
+    ROLE_ADMIN = 'Admin'
     ROLE_LIBRARIAN = 'Librarian'
     ROLE_MEMBER = 'Member'
     
-    ROLE_CHOICES = [(ROLE_ADMIN, 'Admin'), (ROLE_LIBRARIAN, 'Librarian'), (ROLE_MEMBER, 'Member'),]
+    ROLE_CHOICES = [(ROLE_ADMIN, 'Admin'), 
+                    (ROLE_LIBRARIAN, 'Librarian'), 
+                    (ROLE_MEMBER, 'Member'),
+                    ]
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     
