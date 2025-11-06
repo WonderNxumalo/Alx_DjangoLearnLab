@@ -1,0 +1,18 @@
+<!-- Librarian View -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ role }}Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.username }}!</h1>
+    <h2>{{ role }} View (Medium Access)</h2>
+    <p>This page is restricted to users with the 'Librarian' role only. Your role is: <strong>{{ role }}</strong>.</p>
+    <p>You can manage library inventory here.</p>
+    <p><a href="{% url'logout'%}">Logout</a></p>
+    <p><a href="{% url'book-list'%}">Go to Book List</a></p>
+</body>
+</html>

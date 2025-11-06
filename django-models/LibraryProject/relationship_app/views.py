@@ -7,7 +7,20 @@ from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
-from .models import Book, Library
+from django.contrib.auth.decorators import user_passes_test
+from .models import Book, Library, UserProfile
+
+# Custom Access Test Functions
+
+def is_admin(user):
+    return user.is_authenticated and user.userprofile.role == UserProfile.ROLE_ADMIN
+
+def is_librarian(user):
+    return user.is_authenticated and user.userprofile.role == UserProfile.ROLE_LIBRARIAN
+
+def is_member(user):
+    return user.is_authenticated and user.userprofile.role == UserProfile.ROLE_MEMBER
+
 
 # --- 1. Function-based View ---
 def list_all_books(request):
@@ -43,3 +56,16 @@ class RegisterView(CreateView):
     form_class = UserCreationForm
     template_name = 'relationship_app/register.html'
     success_url = reverse_lazy('login')
+    
+# Role-based Views
+@user_passes_test(is_admin, login_url='/login/')
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html', {'role': 'Admin'})
+
+@user_passes_test(is_librarian, login_url='/login/')
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html', {'role': 'Librarian'})
+
+@user_passes_test(is_member, login_url='/login/')
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html', {'role': 'Member'})
