@@ -168,3 +168,8 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 # Allows domain to be included in the browser's HSTS preload list
 SECURE_HSTS_PRELOAD = True
+
+'''
+SECURE_PROXY_SSL_HEADER
+HTTP_X_FORWARDED_PROTO
+'''
