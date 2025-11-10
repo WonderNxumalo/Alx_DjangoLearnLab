@@ -130,3 +130,26 @@ AUTH_USER_MODEL = 'relationship_app.CustomUser'
 '''
 AUTH_USER_MODEL = 'bookshelf.CustomUser
 '''
+
+# --- SECURITY CONFIGURATIONS ---
+
+# 1. Set DEBUG to False in production
+DEBUG = False
+
+# 2. Browser-Side Protection
+# Enforces XSS protection headers
+SECURE_BROWSER_XSS_FILTER = True
+# Prevents content from being loaded in a frame/iframe (protection against clickjacking)
+X_FRAME_OPTIONS = 'DENY'
+# Prevents the browser from MIME-sniffing content type, reducing risk of XSS
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# 3. Cookie Security (Mandatory for production)
+# Ensures session cookies are only sent over HTTPS
+SESSION_COOKIE_SECURE = True
+# Ensures CSRF cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True
+# Prevents client-side JavaScript access to session cookies
+SESSION_COOKIE_HTTPONLY = True
+# Prevents client-side JavaScript access to CSRF tokens (recommended)
+CSRF_COOKIE_HTTPONLY = True

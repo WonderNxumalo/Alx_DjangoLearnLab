@@ -68,3 +68,31 @@ book_delete
 relationship_app.can_delete
 
 This system ensures that only users belonging to a Group that has been assigned the specific permission can access the secured view logic.
+
+Security Best Practices Implementation
+
+We have implemented several security enhancements to protect the application against common vulnerabilities.
+
+4. Secure Settings Configuration (settings.py)
+
+The following configurations have been set to enhance browser and network-level security:
+
+DEBUG = False: Ensures that sensitive application and server information is not exposed to users in a production environment.
+
+X_FRAME_OPTIONS = 'DENY': Protects against Clickjacking attacks by preventing the site from being embedded in a frame.
+
+SECURE_CONTENT_TYPE_NOSNIFF = True: Prevents the browser from attempting to guess the content type, mitigating some forms of XSS attacks.
+
+SESSION_COOKIE_SECURE = True and CSRF_COOKIE_SECURE = True: Ensures that session and CSRF tokens are only transmitted over secure (HTTPS) connections.
+
+SESSION_COOKIE_HTTPONLY = True and CSRF_COOKIE_HTTPONLY = True: Prevents client-side scripts (JavaScript) from accessing these cookies, protecting against cookie theft via XSS.
+
+5. Cross-Site Request Forgery (CSRF) Protection
+
+All interactive forms (login and registration) have been updated to explicitly include the {% csrf_token %} template tag. This mandatory token ensures that form submissions are only accepted from requests originating from our application, providing protection against CSRF attacks.
+
+6. SQL Injection and XSS Mitigation
+
+SQL Injection: The application uses the Django ORM exclusively (Book.objects.all(), etc.). The ORM parameterizes all database queries, making the application inherently resilient to SQL Injection attacks. No direct raw SQL queries are used.
+
+XSS (Cross-Site Scripting): Django templates automatically escape output by default. This means user-provided data rendered in HTML is safely converted to its plain text equivalent, preventing malicious scripts from executing and mitigating XSS vulnerabilities.
