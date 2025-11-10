@@ -64,5 +64,5 @@ class CustomUserManager(BaseUserManager):
 
 '''
 can_create
-can_delte
+can_delete
 '''
