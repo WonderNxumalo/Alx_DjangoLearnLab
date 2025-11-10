@@ -153,3 +153,18 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 # Prevents client-side JavaScript access to CSRF tokens (recommended)
 CSRF_COOKIE_HTTPONLY = True
+
+# Redirect all non-HTTPS requests to HTTPS
+# IMPORTANT: Only set to True when your deployment environment serves via HTTPS.
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS)
+# Instructs browsers to only access the site via HTTPS for the specified time (in seconds).
+# 31536000 seconds = 1 year.
+SECURE_HSTS_SECONDS = 31536000
+
+# Includes all subdomains in the HSTS policy
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Allows domain to be included in the browser's HSTS preload list
+SECURE_HSTS_PRELOAD = True
