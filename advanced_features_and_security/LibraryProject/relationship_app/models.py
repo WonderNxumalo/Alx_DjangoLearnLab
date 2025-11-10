@@ -22,6 +22,15 @@ class Book(models.Model):
     def __str__(self):
         return self.title
     
+    # Custom Permission
+    class Meta:
+        permissions = [
+            ("can_view", "Can view the list and details of books"),
+            ("can_create", "Can add a new book to the catalog"),
+            ("can_edit", "Can modify existing book details"),
+            ("can_delete", "Can remove a book from the catalog"),
+        ]
+    
 # Library Model (Many-to-many relationship via ManyToManyField)
 # A library can hold many books and books can be in many libraries
 
@@ -70,6 +79,9 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
+        
+        if not email:
+            raise ValueError('Superuser must have an email address.')
         
         return self.create_user(email, password, **extra_fields)
 

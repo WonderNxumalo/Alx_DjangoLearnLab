@@ -15,17 +15,23 @@ from .models import Book, Library, CustomUser
 # Custom Access Test Functions
 
 def is_admin(user):
-    return user.is_authenticated and user.userprofile.role == CustomUser.ROLE_ADMIN
+    return user.is_authenticated and user.role == CustomUser.ROLE_ADMIN
 
 def is_librarian(user):
-    return user.is_authenticated and user.userprofile.role == CustomUser.ROLE_LIBRARIAN
+    return user.is_authenticated and user.role == CustomUser.ROLE_LIBRARIAN
 
 def is_member(user):
-    return user.is_authenticated and user.userprofile.role == CustomUser.ROLE_MEMBER
+    return user.is_authenticated and user.role == CustomUser.ROLE_MEMBER
 
 
 # --- 1. Function-based View ---
 def list_all_books(request):
+    # Use permission to who can view the books
+    if not request.user.has_perm('relationship_app.canview'):
+        if not request.user.is_authenticated:
+            return CustomLoginView.as_view()(request)
+        # Show restricted message if authentication lacks permission
+        return HttpResponse("<h1>Access Denied</h1><p>You do not have permission to view the book list.</p>", status=403)
     # Fetch all books from the DBs
     all_books = Book.objects.all().select_related('author')
     
@@ -74,14 +80,14 @@ def member_view(request):
 
 # Secure Book Management Views
 
-@permission_required('relationship_app.can_add_book', login_url='/login/')
+@permission_required('relationship_app.can_create', login_url='/login/')
 def book_add(request):
-    return HttpResponse("<h1>Add Book Page</h1><p>User has permission to add books.</p><p><a href='/books/'>Back to list</a></p>")
+    return HttpResponse("<h1>Add Book Page</h1><p>User has permission to add books (can_create).</p><p><a href='/books/'>Back to list</a></p>")
 
-@permission_required('relationship_app.can_change_book', login_url='/login/')
+@permission_required('relationship_app.can_edit', login_url='/login/')
 def book_edit(request, pk):
-    return HttpResponse(f"<h1>Edit Book {pk} Page</h1><p>User has permission to change books.</p><p><a href='/books/'>Back to list</a></p>")
+    return HttpResponse(f"<h1>Edit Book {pk} Page</h1><p>User has permission to change books (can_edit).</p><p><a href='/books/'>Back to list</a></p>")
 
-@permission_required('relationship_app.can_delete_book', login_url='/login/')
+@permission_required('relationship_app.can_delete', login_url='/login/')
 def book_delete(request, pk):
-    return HttpResponse(f"<h1>Delete Book {pk} Page</h1><p>User has permission to delete books.</p><p><a href='/books/'>Back to list</a></p>")
+    return HttpResponse(f"<h1>Delete Book {pk} Page</h1><p>User has permission to delete books (can_delete).</p><p><a href='/books/'>Back to list</a></p>")
