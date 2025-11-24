@@ -26,3 +26,10 @@ The views use the custom `IsAuthenticatedOrCreateOnly` permission class, which e
 ### 2. Data Validation
 
 The creation and update views (`ListCreateAPIView` and `RetrieveUpdateDestroyAPIView`) automatically trigger the custom `validate_publication_year` method defined in the `BookSerializer` to prevent future years from being saved.
+
+
+=======
+
+Test Strategy: We utilize Django's APITestCase and APIClient to perform integration tests against the API endpoints, simulating live HTTP requests (GET, POST, PUT, DELETE). This ensures the correct interaction between models, serializers, views, and URL configurations.
+
+Test Isolation: Django automatically configures a separate test database (using the configuration from settings.py) for the entire test run, ensuring that tests are isolated and do not affect development or production data.
