@@ -51,4 +51,5 @@ class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     CreateView
     UpdateView
     DeleteView
+    from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
     '''
