@@ -44,3 +44,11 @@ class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     
     # Permission setup: Allow read-only, but for authenticated users.
     permission_classes = [IsAuthenticatedOrCreatedOnly]
+    
+    '''
+    ListView
+    DetailView
+    CreateView
+    UpdateView
+    DeleteView
+    '''
