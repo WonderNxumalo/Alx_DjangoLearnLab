@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+def home_page(request):
+    """Renders the base.html template."""
+    return render(request, 'base.html', {})
