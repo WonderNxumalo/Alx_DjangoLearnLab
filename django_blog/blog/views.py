@@ -30,6 +30,15 @@ class RegisterView(CreateView):
         messages.success(self.request, "Account created successfully. Please log in.")
         return super().form_valid(form)
     
+# Use Django's built-in views for simple authentication (they need no custom code)
+class CustomLoginView(LoginView):
+    """Uses Django's built-in LoginView."""
+    template_name = 'registration/login.html'
+
+class CustomLogoutView(LogoutView):
+    """Uses Django's built-in LogoutView."""
+    next_page = reverse_lazy('home')
+    
 @login_required
 def profile_view(request):
     '''Allows authenticated users to view and update their profile details.'''
