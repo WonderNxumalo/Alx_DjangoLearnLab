@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <h2>Profile Management</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <p>Welcome, {{ user.username }}! You can update your details below.</p>
+
+    <h3>Update Information</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Update Profile</button>
+    </form>
+    
+    <p><a href="{% url 'password_change' %}">Change Password</a></p>
+</div>
+{% endblock %}
