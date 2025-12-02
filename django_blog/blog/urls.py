@@ -5,7 +5,8 @@ from . import views
 urlpatterns = [
     # Mapped views for the links in base.html
     path('', views.home_page, name='home'),
-    path('posts/', views.home_page, name='posts'),
-    path('login/', views.home_page, name='login'),
-    path('register/', views.home_page, name='register'),
+    path('posts/', views.post_list, name='posts'),
+    path('register/', views.RegisterView.as_view(), name='register'),
+    path('profile/', views.profile_view, name='profile'),
+    
 ]
