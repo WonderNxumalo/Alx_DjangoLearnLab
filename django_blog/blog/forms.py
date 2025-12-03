@@ -2,6 +2,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
+from .models import Post
 
 User = get_user_model()
 
@@ -17,3 +18,9 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email'] # User can change their email
+        
+class PostForm(forms.ModelForm):
+    '''Form for creating and updating Post instances.'''
+    class Meta:
+        model = Post
+        field = ['title', 'content']
