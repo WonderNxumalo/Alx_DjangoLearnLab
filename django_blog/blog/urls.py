@@ -20,4 +20,8 @@ urlpatterns = [
 ]
 
 '''
-login/'''
+login/
+post/<int:pk>/delete/
+post/<int:pk>/update/
+post/new/
+'''
