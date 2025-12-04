@@ -35,3 +35,6 @@ class CommentForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 3}),
         }
         
+'''
+TagWidget()
+'''
