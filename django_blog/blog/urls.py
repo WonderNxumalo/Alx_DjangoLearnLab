@@ -1,7 +1,7 @@
 # blog/urls.py
 from django.urls import path
 from . import views
-from .views import (PostListView, PostDetailView, PostCreateView, PostDeleteView, PostUpdateView)
+from .views import (PostListView, PostDetailView, PostCreateView, PostDeleteView, PostUpdateView, CommentCreateView, CommentDeleteView, CommentUpdateView)
 
 urlpatterns = [
     # Mapped views for the links in base.html
@@ -16,6 +16,12 @@ urlpatterns = [
     # Authentication URLs
     path('register/', views.RegisterView.as_view(), name='register'),
     path('profile/', views.profile_view, name='profile'),
+    # Comment URLs
+    # Create: Linked to a specific post by its primary key (post_pk)
+    path('posts/<int:post_pk>/comment/new/', CommentCreateView.as_view(), name='comment_create'),
+    # Update/Delete: Linked directly to the comment's primary key (pk)
+    path('comment/<int:pk>/edit/', CommentUpdateView.as_view(), name='comment_update'),
+    path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
     
 ]
 

@@ -2,7 +2,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
 from django import forms
-from .models import Post
+from .models import Post, Comment
 
 User = get_user_model()
 
@@ -23,4 +23,14 @@ class PostForm(forms.ModelForm):
     '''Form for creating and updating Post instances.'''
     class Meta:
         model = Post
-        field = ['title', 'content']
+        fields = ['title', 'content']
+        
+class CommentForm(forms.ModelForm):
+    '''Form for creating and updating Comment instances.'''
+    class Meta:
+        model = Comment
+        # Only include content, as post and author are set in the view
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 3}),
+        }

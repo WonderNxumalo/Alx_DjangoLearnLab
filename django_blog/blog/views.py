@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, DeleteView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView # Use built-in CBVs
-from .forms import CustomUserCreationForm, UserProfileForm, PostForm
-from .models import Post # Keep Post import
+from .forms import CustomUserCreationForm, UserProfileForm, PostForm, CommentForm
+from .models import Post, Comment # Keep Post import
 
 
 # General Blog Views
@@ -81,6 +81,53 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         messages.success(self.request, 'Account created successfully! Please log in.')
         return super().form_valid(form)
+    
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    '''Handles creating a new comment under a specific post.'''
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    
+    def form_valid(self, form):
+        # Get the Post instance based on the URL
+        post = get_object_or_404(Post, pk=self.kwargs['post_pk'])
+        # Automatically set the author and post fields
+        form.instance.author = self.request.user
+        form.instance.post = post
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        # Redirect back to the post detail page
+        return reverse('post_detail', kwargs={'pk': self.kwargs['post_pk']})
+    
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """Allows the comment author to edit their comment."""
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def test_func(self):
+        # Only allow if the logged-in user is the comment author
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        # Redirect back to the post detail page after update
+        return reverse('post_detail', kwargs={'pk': self.object.post.pk})
+    
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Allows the comment author to delete their comment."""
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def test_func(self):
+        # Only allow if the logged-in user is the comment author
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        # Redirect back to the post detail page after deletion
+        return reverse('post_detail', kwargs={'pk': self.object.post.pk})
 
 @login_required 
 def profile_view(request):
