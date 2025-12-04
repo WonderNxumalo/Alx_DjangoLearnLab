@@ -20,10 +20,10 @@ class UserProfileForm(forms.ModelForm):
         fields = ['email'] # User can change their email
         
 class PostForm(forms.ModelForm):
-    '''Form for creating and updating Post instances.'''
+    '''Form for creating and updating Post instances, now including tags.'''
     class Meta:
         model = Post
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'tags']
         
 class CommentForm(forms.ModelForm):
     '''Form for creating and updating Comment instances.'''
@@ -34,3 +34,4 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 3}),
         }
+        

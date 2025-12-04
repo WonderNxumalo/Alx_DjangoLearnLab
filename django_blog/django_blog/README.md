@@ -24,3 +24,33 @@ Creation: Requires authentication (LoginRequiredMixin). The comment is automatic
 Edit/Delete: Requires the user to be the exact author of the comment (LoginRequiredMixin + UserPassesTestMixin). Unauthorized users are blocked with a 403 error.
 
 URLs: Comment actions are logically nested. Creation uses the post's primary key (/posts/<post_pk>/comment/new/), while update and delete use the comment's primary key (/comment/<pk>/edit/).
+
+=== Tagging and Search Feature ===
+
+This system utilizes django-taggit and custom Django logic for improved content organization and discovery.
+
+I. Tagging Integration
+
+Model: The Post model includes a tags = TaggableManager() field, providing a simple way to attach multiple tags to a single post.
+
+Form: The PostForm includes the tags field, allowing users to enter comma-separated tags during creation or editing.
+
+Discovery:
+
+Tagged List: The view tagged_posts_list handles the URL pattern /tags/<slug:tag_slug>/, filtering posts to display only those associated with the requested tag.
+
+Template Links: Tag links in the detail and list views use {% url 'tagged_posts' tag_slug=tag.slug %} to direct users to the filtered list.
+
+II. Search Functionality
+
+Implementation: The search_results view processes queries submitted via the search form in base.html.
+
+Search Criteria: Search is complex and efficient, using Django's Q objects to query posts based on:
+
+Content within the title (title__icontains).
+
+Content within the content body (content__icontains).
+
+Posts associated with an exact tag name match (using the taggit.models.Tag model).
+
+User Guide: Users can enter any keyword into the search bar, and the system will return posts where the keyword appears in the title, content, or as a tag.

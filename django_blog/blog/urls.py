@@ -22,6 +22,9 @@ urlpatterns = [
     # Update/Delete: Linked directly to the comment's primary key (pk)
     path('comment/<int:pk>/edit/', CommentUpdateView.as_view(), name='comment_update'),
     path('comment/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
+    # Search and tagging URLs
+    path('search/', views.search_results, name='search'),
+    path('tags/<slug:tag_slug>/', views.tagged_posts_list, name='tagged_posts'),
     
 ]
 

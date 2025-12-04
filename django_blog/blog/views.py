@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView # Use built-in CBVs
 from .forms import CustomUserCreationForm, UserProfileForm, PostForm, CommentForm
 from .models import Post, Comment # Keep Post import
+from django.db.models import Q
+from taggit.models import Tag
 
 
 # General Blog Views
@@ -128,6 +130,46 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def get_success_url(self):
         # Redirect back to the post detail page after deletion
         return reverse('post_detail', kwargs={'pk': self.object.post.pk})
+
+def search_results(request):
+    """
+    Implements search functionality across title, content, and tags.
+    """
+    query = request.GET.get('q')
+    posts = Post.objects.all()
+    
+    if query:
+        # 🌟 Use Q objects for OR lookups (Title, Content)
+        query_parts = Q(title__icontains=query) | Q(content__icontains=query)
+        
+        # 🌟 Add Tags lookup (uses taggit's built-in tag filtering)
+        # Check if the query matches a tag name exactly
+        try:
+            tag = Tag.objects.get(name__iexact=query)
+            # Combine the keyword search with the tag search
+            posts = posts.filter(query_parts | Q(tags__name__iexact=query)).distinct()
+        except Tag.DoesNotExist:
+            # If no exact tag match, just filter by title and content
+            posts = posts.filter(query_parts).distinct()
+        
+    context = {
+        'title': f"Search Results for '{query}'",
+        'posts': posts,
+        'query': query,
+    }
+    return render(request, 'blog/search_results.html', context)
+
+def tagged_posts_list(request, tag_slug):
+    """Display all posts associated with a specific tag."""
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags__in=[tag])
+    
+    context = {
+        'title': f"Posts Tagged: {tag.name}",
+        'tag': tag,
+        'posts': posts,
+    }
+    return render(request, 'blog/tagged_posts.html', context)
 
 @login_required 
 def profile_view(request):
