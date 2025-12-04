@@ -190,3 +190,7 @@ def profile_view(request):
         'form': form,
     }
     return render(request, 'profile.html', context)
+
+'''
+tags__name__icontains
+'''
