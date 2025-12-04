@@ -30,6 +30,6 @@ login/
 post/<int:pk>/delete/
 post/<int:pk>/update/
 post/new/
-comment<int:pk>/update/
+comment/<int:pk>/update/
 post/<int:pk>/comments/new/
 '''
