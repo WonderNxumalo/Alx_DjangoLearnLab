@@ -75,3 +75,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_following_count(self, obj):
         return obj.following.count()
     
+'''
+from rest_framework.authtoken.models import Token
+Token.objects.create
+get_user_model().objects.create_user
+'''
