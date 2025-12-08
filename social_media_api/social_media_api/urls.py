@@ -22,4 +22,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # Route all /accounts requests to the account app
     path('accounts/', include('accounts.urls')),
+    path('api/', include('posts.urls')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
