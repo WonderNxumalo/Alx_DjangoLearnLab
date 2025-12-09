@@ -21,3 +21,9 @@ urlpatterns = [
     path('follow/<int:user_pk>/', FollowUserView.as_view(), name='follow_user'),
     path('unfollow/<int:user_pk>/', UnfollowUserView.as_view(), name='unfollow_user'),
 ]
+
+
+'''
+unfollow/<int:user_id>/
+follow/<int:user_id>/
+'''
