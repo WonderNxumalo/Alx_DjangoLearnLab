@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
+import dj_database_url 
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,9 +25,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-0yfwz=ap4oco6xb8$q2cdi+93ag&l!*^iftq2i#d3oz5^=mja&"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+if not DEBUG:
+    # Use environment variable for host configuration
+    ALLOWED_HOSTS = [os.environ.get('DJANGO_ALLOWED_HOST', 'your-heroku-app-name.herokuapp.com')]
+    # Enforce HTTPS redirection for security
+    SECURE_SSL_REDIRECT = True 
+    # Enable HSTS (HTTP Strict Transport Security)
+    SECURE_HSTS_SECONDS = 31536000 # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+else:
+    ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -46,6 +59,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
+    'django.contrib.sessions.middleware.SessionMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -77,11 +92,14 @@ WSGI_APPLICATION = "social_media_api.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Database Configuration
+# Use dj-database-url to configure database from Heroku's DATABASE_URL env var
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',  # Fallback to sqlite for local dev
+        conn_max_age=600,
+        ssl_require=not DEBUG # Enable SSL for Heroku's PostgreSQL
+    )
 }
 
 
@@ -119,7 +137,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Collect static files here
+
+# Set up storage backend for Whitenoise (essential for compression/caching)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -136,3 +161,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     )
 }
+
+
+'''
+DEBUG = False
+'''
