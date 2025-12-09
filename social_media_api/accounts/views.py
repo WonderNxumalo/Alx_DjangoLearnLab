@@ -8,6 +8,7 @@ from django.contrib.auth import login
 from django.shortcuts import get_object_or_404
 from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
 from .models import CustomUser
+from posts.views import create_notification
 
 # --- /accounts/register/ View (POST) ---
 class RegisterView(generics.CreateAPIView):
@@ -89,9 +90,26 @@ class FollowUserView(APIView):
                 {"detail": "You cannot follow yourself."}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
+            
+        user_to_follow = get_object_or_404(CustomUser, pk=user_pk)
+        if request.user.pk == user_to_follow.pk:
+            return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if already following
+        if request.user.following.filter(pk=user_to_follow.pk).exists():
+             return Response({"detail": f"You are already following {user_to_follow.username}."}, status=status.HTTP_200_OK)
 
         # 3. Add the user to the current user's 'following' list
         request.user.following.add(user_to_follow)
+        
+        # Create Notification
+        create_notification(
+            recipient=user_to_follow,
+            actor=request.user,
+            verb="started following you",
+            target=request.user
+        )
+        
         return Response(
             {"detail": f"You are now following {user_to_follow.username}."}, 
             status=status.HTTP_200_OK

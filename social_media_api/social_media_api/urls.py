@@ -24,4 +24,6 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('api/', include('posts.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('notifications/', include('notifications.urls')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]

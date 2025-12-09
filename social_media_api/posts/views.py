@@ -1,11 +1,16 @@
 # posts/views.py
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import viewsets, permissions, generics
+from rest_framework import viewsets, permissions, generics, status
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
-from .permissions import IsAuthorOrReadOnly, StandardResultsPagination # We will define this custom permission
+from .permissions import IsAuthorOrReadOnly #StandardResultsPagination # We will define this custom permission
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from django.contrib.contenttypes.models import ContentType
+
 
 # --- Custom Pagination Class (Step 5) ---
 class StandardResultsPagination(PageNumberPagination):
@@ -74,7 +79,60 @@ class FeedView(generics.ListAPIView):
 
         # 3. Order by created_at (newest posts at the top)
         return queryset.order_by('-created_at')
+
+# --- Helper function for Notification creation (Place at the top of views.py) ---
+def create_notification(recipient, actor, verb, target):
+    """Creates a new Notification object."""
+    from notifications.models import Notification
     
+    # Prevent notifying yourself for self-actions
+    if recipient.pk == actor.pk:
+        return 
+
+    Notification.objects.create(
+        recipient=recipient,
+        actor=actor,
+        verb=verb,
+        target=target
+    )
+
+
+# --- /api/posts/<int:pk>/like/ View (POST/DELETE) ---
+class PostLikeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        user = request.user
+        
+        # Check if the user already liked the post
+        like, created = Like.objects.get_or_create(post=post, user=user)
+        
+        if created:
+            # SUCCESS: Like created, now generate notification
+            create_notification(
+                recipient=post.author,
+                actor=user,
+                verb="liked your post",
+                target=post
+            )
+            return Response({"detail": "Post liked successfully."}, status=status.HTTP_201_CREATED)
+        else:
+            # Already liked, this acts as a toggle (unlike)
+            like.delete()
+            return Response({"detail": "Post unliked successfully."}, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        # Handles explicit DELETE request for unlike
+        post = get_object_or_404(Post, pk=pk)
+        user = request.user
+        
+        liked_post = Like.objects.filter(post=post, user=user)
+        if liked_post.exists():
+            liked_post.delete()
+            return Response({"detail": "Post unliked successfully."}, status=status.HTTP_204_NO_CONTENT)
+        
+        return Response({"detail": "You have not liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 
 '''
 Post.objects.filter(author__in=following_users).order_by

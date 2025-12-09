@@ -1,7 +1,7 @@
 # posts/serializers.py
 
 from rest_framework import serializers
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from accounts.serializers import ProfileSerializer # Reuse the ProfileSerializer for author/user display
 
 # --- 1. Comment Serializer ---
@@ -44,3 +44,12 @@ class PostSerializer(serializers.ModelSerializer):
         # Set the author to the currently authenticated user
         validated_data['author'] = self.context['request'].user
         return super().create(validated_data)
+    
+# --- Like Serializer ---
+class LikeSerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = Like
+        fields = ('id', 'post', 'user', 'user_username', 'created_at')
+        read_only_fields = ('user', 'created_at')
