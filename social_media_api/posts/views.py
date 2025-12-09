@@ -74,3 +74,8 @@ class FeedView(generics.ListAPIView):
 
         # 3. Order by created_at (newest posts at the top)
         return queryset.order_by('-created_at')
+    
+
+'''
+Post.objects.filter(author_in=following_users).order_by
+'''
