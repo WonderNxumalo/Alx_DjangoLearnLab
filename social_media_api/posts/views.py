@@ -1,11 +1,11 @@
 # posts/views.py
-
-from rest_framework import viewsets, permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, permissions, generics
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
-from .permissions import IsAuthorOrReadOnly # We will define this custom permission
+from .permissions import IsAuthorOrReadOnly, StandardResultsPagination # We will define this custom permission
 
 # --- Custom Pagination Class (Step 5) ---
 class StandardResultsPagination(PageNumberPagination):
@@ -55,3 +55,22 @@ class CommentViewSet(viewsets.ModelViewSet):
         # in the request data OR we'll use a mixin if nested routing is implemented.
         # Since we use the serializer's create method to set the user/post, this is sufficient.
         serializer.save(user=self.request.user)
+        
+# --- /api/feed/ View (GET) ---
+class FeedView(generics.ListAPIView):
+    """
+    Retrieves a list of posts from users the current user is following.
+    """
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = StandardResultsPagination
+
+    def get_queryset(self):
+        # 1. Get the list of users the current user is following
+        following_users = self.request.user.following.all()
+
+        # 2. Retrieve posts created by those users
+        queryset = Post.objects.filter(author__in=following_users)
+
+        # 3. Order by created_at (newest posts at the top)
+        return queryset.order_by('-created_at')

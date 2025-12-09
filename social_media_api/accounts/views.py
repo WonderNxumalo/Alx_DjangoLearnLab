@@ -1,10 +1,11 @@
 # accounts/views.py
-
-from rest_framework import generics, permissions
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from django.contrib.auth import login
+from django.shortcuts import get_object_or_404
 from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
 from .models import CustomUser
 
@@ -67,3 +68,59 @@ class ProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         # Ensure only the currently authenticated user's profile is returned/updated
         return self.request.user
+    
+# --- /accounts/follow/<int:user_pk>/ View (POST) ---
+class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_pk):
+        # 1. Get the target user to follow
+        try:
+            user_to_follow = CustomUser.objects.get(pk=user_pk)
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"detail": "User not found."}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # 2. Prevent self-following
+        if request.user.pk == user_to_follow.pk:
+            return Response(
+                {"detail": "You cannot follow yourself."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Add the user to the current user's 'following' list
+        request.user.following.add(user_to_follow)
+        return Response(
+            {"detail": f"You are now following {user_to_follow.username}."}, 
+            status=status.HTTP_200_OK
+        )
+
+# --- /accounts/unfollow/<int:user_pk>/ View (POST/DELETE) ---
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_pk):
+        # 1. Get the target user to unfollow
+        try:
+            user_to_unfollow = CustomUser.objects.get(pk=user_pk)
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"detail": "User not found."}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # 2. Check if the user is currently following them
+        if not request.user.following.filter(pk=user_to_unfollow.pk).exists():
+             return Response(
+                {"detail": f"You are not currently following {user_to_unfollow.username}."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Remove the user from the current user's 'following' list
+        request.user.following.remove(user_to_unfollow)
+        return Response(
+            {"detail": f"You have unfollowed {user_to_unfollow.username}."}, 
+            status=status.HTTP_200_OK
+        )

@@ -1,7 +1,7 @@
 # accounts/urls.py
 
 from django.urls import path
-from .views import RegisterView, LoginView, ProfileView
+from .views import RegisterView, LoginView, ProfileView, FollowUserView, UnfollowUserView
 from rest_framework.authtoken import views as auth_views
 
 urlpatterns = [
@@ -16,4 +16,8 @@ urlpatterns = [
     
     # Alternative: Django REST Framework's default token endpoint (if needed)
     # path('api-token-auth/', auth_views.obtain_auth_token)
+    
+    # Follow Management
+    path('follow/<int:user_pk>/', FollowUserView.as_view(), name='follow_user'),
+    path('unfollow/<int:user_pk>/', UnfollowUserView.as_view(), name='unfollow_user'),
 ]
