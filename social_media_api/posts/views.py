@@ -77,5 +77,5 @@ class FeedView(generics.ListAPIView):
     
 
 '''
-Post.objects.filter(author_in=following_users).order_by
+Post.objects.filter(author__in=following_users).order_by
 '''
